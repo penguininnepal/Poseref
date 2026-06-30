@@ -1,4 +1,4 @@
-import Camera from "./components/Camera"
+import Camera from "./Camera"
 
 const App = () => {
   return (

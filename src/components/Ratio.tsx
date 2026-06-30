@@ -1,11 +1,10 @@
 import { useState } from "react";
 
 const ratios = [
-  { label: "Instagram Square", value: "1/1" },
-  { label: "Instagram Portrait", value: "4/5" },
-  { label: "Landscape", value: "16/9" },
-  { label: "TikTok Vertical", value: "9/16" },
-  { label: "Pinterest Pin", value: "2/3" },
+  { label: "1:1", value: "1/1" },
+  { label: "3:4", value: "3/4" },
+  { label: "9:16", value: "9/16" },
+  { label: "Full", value: "full" }, // ✅ portrait full
 ];
 
 interface RatioProps {
@@ -13,7 +12,7 @@ interface RatioProps {
 }
 
 const Ratio: React.FC<RatioProps> = ({ onChange }) => {
-  const [selected, setSelected] = useState("1/1");
+  const [selected, setSelected] = useState("3/4");
 
   const handleSelect = (value: string) => {
     setSelected(value);
