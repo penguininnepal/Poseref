@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@keyframes flashGlow {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.animate-flashGlow {
+  animation: flashGlow 0.6s ease-in-out;
+}
