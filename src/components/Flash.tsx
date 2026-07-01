@@ -20,25 +20,22 @@ const Flash: React.FC<FlashProps> = ({ cameraType = "back", onModeChange }) => {
 
   return (
     <div className="relative text-white">
-      {/* Flash icon */}
       <div
         onClick={() => {
-          console.log("Flash icon clicked!");
           setShowSelector(true);
         }}
-        className="flex flex-col items-center cursor-pointer"
+        className="flex cursor-pointer flex-col items-center rounded-full border border-white/10 bg-white/10 px-2.5 py-1.5 transition hover:bg-white/15"
       >
-        <span className="text-lg">⚡</span>
-        <span className="text-xs capitalize">{mode}</span>
+        <span className="text-sm">⚡</span>
+        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/80">{mode}</span>
       </div>
 
-      {/* Mode selector overlay */}
       {showSelector && (
-        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
-          <h3 className="text-white text-lg mb-4">Select Flash Mode</h3>
-          <button onClick={() => selectMode("off")} className="bg-gray-700 text-white px-4 py-2 rounded">Flash Off</button>
-          <button onClick={() => selectMode("auto")} className="bg-gray-700 text-white px-4 py-2 rounded">Flash On (Capture)</button>
-          <button onClick={() => selectMode("always")} className="bg-gray-700 text-white px-4 py-2 rounded">Flash Always On</button>
+        <div className="absolute left-0 top-12 z-50 flex min-w-[180px] flex-col gap-2 rounded-2xl border border-white/10 bg-neutral-900/95 p-3 shadow-2xl">
+          <h3 className="text-sm font-semibold text-white">Select flash</h3>
+          <button onClick={() => selectMode("off")} className="rounded-xl bg-white/10 px-3 py-2 text-left text-sm text-white transition hover:bg-white/15">Off</button>
+          <button onClick={() => selectMode("auto")} className="rounded-xl bg-white/10 px-3 py-2 text-left text-sm text-white transition hover:bg-white/15">Auto on capture</button>
+          <button onClick={() => selectMode("always")} className="rounded-xl bg-white/10 px-3 py-2 text-left text-sm text-white transition hover:bg-white/15">Always on</button>
         </div>
       )}
     </div>

@@ -6,9 +6,7 @@ interface ViewScreenProps {
   ratio: string;
   timerValue: number;
   cameraType: "user" | "environment";
-  setCameraType: (type: "user" | "environment") => void;
-  lastPhoto: string | null;
-  setLastPhoto: (photo: string | null) => void;
+  onPhotoCaptured: (photo: string) => void;
 }
 
 const ViewScreen: React.FC<ViewScreenProps> = ({
@@ -16,8 +14,7 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
   ratio,
   timerValue,
   cameraType,
-  setCameraType,
-  setLastPhoto,
+  onPhotoCaptured,
 }) => {
   const [zoom, setZoom] = useState(1);
   const [showFrontGlow, setShowFrontGlow] = useState(false);
@@ -26,25 +23,25 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: cameraType } })
-      .then(stream => {
+      .then((stream) => {
         if (videoRef.current) videoRef.current.srcObject = stream;
       })
-      .catch(err => console.error("Camera access denied:", err));
+      .catch((err) => console.error("Camera access denied:", err));
   }, [cameraType]);
 
   const handleCapture = (): void => {
+    console.log("Capture button pressed");
     if (timerValue > 0) {
       setCountdown(timerValue);
       const interval = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev && prev > 1) {
             return prev - 1;
-          } else {
-            clearInterval(interval);
-            setCountdown(null);
-            doCapture();
-            return null;
           }
+          clearInterval(interval);
+          setCountdown(null);
+          doCapture();
+          return null;
         });
       }, 1000);
     } else {
@@ -53,6 +50,7 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
   };
 
   const doCapture = (): void => {
+    console.log("Performing capture", { flashMode, cameraType, ratio, zoom });
     if (flashMode === "auto" && cameraType === "user") {
       setShowFrontGlow(true);
       setTimeout(() => setShowFrontGlow(false), 600);
@@ -84,46 +82,54 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
         video,
         (video.videoWidth - width) / 2,
         (video.videoHeight - height) / 2,
-        width, height,
-        0, 0, width, height
+        width,
+        height,
+        0,
+        0,
+        width,
+        height
       );
       const imageData = canvas.toDataURL("image/png");
-      setLastPhoto(imageData);
+      console.log("Captured image data created");
+      onPhotoCaptured(imageData);
     }
   };
 
   return (
-    <div className="relative flex-1 bg-black">
+    <div className="relative flex-1 overflow-hidden bg-black">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_55%)]" />
       <video
         ref={videoRef}
         autoPlay
         playsInline
-        className="w-full h-full object-cover"
+        className="h-full w-full object-cover"
         style={{ transform: `scale(${zoom})` }}
       />
 
-      {/* Countdown overlay */}
+      <div className="absolute inset-x-0 top-4 flex justify-center px-4">
+        <div className="rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.24em] text-white/80 backdrop-blur-md">
+          {cameraType === "user" ? "Selfie" : "Rear"}
+        </div>
+      </div>
+
       {countdown !== null && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-50">
-          <span className="text-black text-6xl font-bold bg-white/70 px-6 py-4 rounded-lg">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40">
+          <span className="rounded-3xl bg-white/90 px-6 py-4 text-6xl font-semibold text-black shadow-2xl">
             {countdown}
           </span>
         </div>
       )}
 
-      {/* Flash glow */}
       {cameraType === "user" && (flashMode === "always" || showFrontGlow) && (
-        <div className="absolute inset-0 z-40 pointer-events-none animate-flashGlow">
-          <div className="w-full h-full bg-white/40"></div>
+        <div className="pointer-events-none absolute inset-0 z-40 animate-flashGlow">
+          <div className="h-full w-full bg-white/35" />
         </div>
       )}
 
-      {/* Zoom control */}
-      <div className="absolute bottom-[120px] w-full flex justify-center z-40">
+      <div className="absolute bottom-[152px] z-40 flex w-full justify-center px-4">
         <ZoomControl zoom={zoom} onChange={setZoom} />
       </div>
 
-      {/* Hidden trigger for Bottom capture */}
       <button onClick={handleCapture} className="hidden" id="hiddenCaptureTrigger" />
     </div>
   );

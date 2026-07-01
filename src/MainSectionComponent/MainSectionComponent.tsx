@@ -3,16 +3,22 @@ import Top from "./Top";
 import ViewScreen from "./ViewScreen";
 import Bottom from "./Bottom";
 
-const MainSectionComponent: React.FC = () => {
-  // Shared state
+interface MainSectionComponentProps {
+  photos: string[];
+  addPhoto: (photo: string) => void;
+  onOpenGallery: () => void;
+}
+
+const MainSectionComponent: React.FC<MainSectionComponentProps> = ({ photos, addPhoto, onOpenGallery }) => {
   const [flashMode, setFlashMode] = useState<"off" | "auto" | "always">("off");
   const [ratio, setRatio] = useState("3/4");
   const [timerValue, setTimerValue] = useState<number>(0);
   const [cameraType, setCameraType] = useState<"user" | "environment">("user");
-  const [lastPhoto, setLastPhoto] = useState<string | null>(null);
+
+  const lastPhoto = photos[0] ?? null;
 
   return (
-    <div className="flex flex-col w-full h-screen">
+    <div className="flex h-full w-full flex-col">
       <Top
         flashMode={flashMode}
         setFlashMode={setFlashMode}
@@ -27,13 +33,14 @@ const MainSectionComponent: React.FC = () => {
         timerValue={timerValue}
         cameraType={cameraType}
         setCameraType={setCameraType}
-        lastPhoto={lastPhoto}
-        setLastPhoto={setLastPhoto}
+        onPhotoCaptured={addPhoto}
       />
       <Bottom
         onCapture={() => document.getElementById("hiddenCaptureTrigger")?.click()}
         lastPhoto={lastPhoto}
         onSwapCamera={(t) => setCameraType(t === "front" ? "user" : "environment")}
+        onOpenGallery={onOpenGallery}
+        photoCount={photos.length}
       />
     </div>
   );

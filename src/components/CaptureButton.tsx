@@ -1,13 +1,13 @@
 const CaptureButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <div
+    <button
       onClick={onClick}
-      className="relative bg-gradient-to-b from-white to-gray-200 h-20 w-20 rounded-full shadow-xl cursor-pointer active:scale-95 transition-transform flex items-center justify-center"
+      className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-gradient-to-b from-white via-white to-neutral-300 shadow-[0_15px_40px_rgba(255,255,255,0.2)] transition active:scale-95"
     >
-      <div className="bg-gray-400 h-12 w-12 rounded-full shadow-inner"></div>
-      <div className="absolute inset-0 rounded-full border-4 border-gray-500 opacity-70"></div>
-      <div className="absolute top-2 left-2 h-16 w-16 rounded-full border border-white opacity-40"></div>
-    </div>
+      <div className="absolute inset-[6px] rounded-full border border-white/40" />
+      <div className="h-12 w-12 rounded-full bg-neutral-900 shadow-inner transition group-active:scale-95" />
+      <div className="absolute inset-0 rounded-full border-[5px] border-neutral-900/70" />
+    </button>
   );
 };
 

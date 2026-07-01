@@ -20,15 +20,15 @@ const Ratio: React.FC<RatioProps> = ({ onChange }) => {
   };
 
   return (
-    <div className="flex flex-col items-center text-white text-xs">
-      <span className="mb-1">Ratio</span>
+    <div className="flex flex-col items-center text-white">
+      <span className="mb-1 text-[10px] font-medium uppercase tracking-[0.2em] text-white/70">Ratio</span>
       <select
         value={selected}
         onChange={(e) => handleSelect(e.target.value)}
-        className="bg-gray-700 text-white rounded px-2 py-1"
+        className="rounded-full border border-white/10 bg-white/10 px-2.5 py-1.5 text-[11px] text-white outline-none"
       >
         {ratios.map((r) => (
-          <option key={r.value} value={r.value}>
+          <option key={r.value} value={r.value} className="bg-neutral-900 text-white">
             {r.label}
           </option>
         ))}

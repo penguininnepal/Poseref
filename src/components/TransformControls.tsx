@@ -1,9 +1,21 @@
-const TransformControls = ({ onRotate, onFlip, onScale }: any) => {
+interface TransformControlsProps {
+  onRotate: () => void;
+  onFlip: () => void;
+  onScale: () => void;
+}
+
+const TransformControls: React.FC<TransformControlsProps> = ({ onRotate, onFlip, onScale }) => {
   return (
-    <div className="absolute right-2 bottom-24 flex flex-col space-y-2">
-      <button onClick={onRotate} className="bg-gray-700 text-white text-xs px-2 py-1 rounded">Rotate</button>
-      <button onClick={onFlip} className="bg-gray-700 text-white text-xs px-2 py-1 rounded">Flip</button>
-      <button onClick={onScale} className="bg-gray-700 text-white text-xs px-2 py-1 rounded">Scale</button>
+    <div className="flex gap-2">
+      <button onClick={onRotate} className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-white/90 transition hover:bg-white/15">
+        ↻
+      </button>
+      <button onClick={onFlip} className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-white/90 transition hover:bg-white/15">
+        ⇋
+      </button>
+      <button onClick={onScale} className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-white/90 transition hover:bg-white/15">
+        ⤡
+      </button>
     </div>
   );
 };

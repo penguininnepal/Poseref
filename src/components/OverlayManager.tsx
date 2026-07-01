@@ -5,24 +5,19 @@ const OverlayManager = () => {
 
   const addOverlay = () => {
     const newOverlay = `Overlay ${overlays.length + 1}`;
-    setOverlays([...overlays, newOverlay]);
+    setOverlays((current) => [...current, newOverlay]);
+    console.log("Overlay added", newOverlay);
   };
 
   return (
-    <div className="absolute left-2 bottom-24">
+    <div className="flex items-center gap-2">
       <button
         onClick={addOverlay}
-        className="bg-blue-600 text-white text-xs px-3 py-1 rounded"
+        className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-white/90 transition hover:bg-white/15"
       >
-        + Overlay
+        +
       </button>
-
-      {/* Show overlays */}
-      <div className="mt-2 text-white text-xs">
-        {overlays.map((overlay, i) => (
-          <div key={i}>{overlay}</div>
-        ))}
-      </div>
+      <div className="hidden text-white/70 text-[10px] sm:block">{overlays.length} overlays</div>
     </div>
   );
 };

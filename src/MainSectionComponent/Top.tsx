@@ -15,12 +15,16 @@ interface TopProps {
 
 const Top: React.FC<TopProps> = ({ setFlashMode, setRatio, setTimerValue }) => {
   return (
-    <div className="flex justify-around items-center bg-gray-900 h-[50px] text-white text-sm">
-      <Flash cameraType="back" onModeChange={setFlashMode} />
-      <Ratio onChange={setRatio} />
-      <Grid />
-      <Timer onChange={setTimerValue} />
-      <Setting />
+    <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-black/40 px-4 py-3 backdrop-blur-xl">
+      <div className="flex items-center gap-2">
+        <Flash cameraType="back" onModeChange={setFlashMode} />
+        <Ratio onChange={setRatio} />
+        <Grid />
+      </div>
+      <div className="flex items-center gap-2">
+        <Timer onChange={setTimerValue} />
+        <Setting />
+      </div>
     </div>
   );
 };
