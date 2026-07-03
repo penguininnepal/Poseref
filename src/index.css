@@ -35,3 +35,13 @@ input {
 .animate-flashGlow {
   animation: flashGlow 0.6s ease-in-out;
 }
+
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
