@@ -2,18 +2,21 @@ export type FlashMode = "off" | "auto" | "always";
 
 interface FlashProps {
   value: FlashMode;
+  cameraType?: "back" | "front";
   open: boolean;
   onToggle: () => void;
   onChange: (mode: FlashMode) => void;
 }
 
-const FLASH_OPTIONS: { value: FlashMode; label: string; desc: string; icon: string }[] = [
-  { value: "off", label: "Off", desc: "No flash", icon: "🚫" },
-  { value: "auto", label: "Auto", desc: "Front glow on capture", icon: "⚡" },
-  { value: "always", label: "On", desc: "Front glow always", icon: "🔆" },
-];
+const Flash: React.FC<FlashProps> = ({ value, cameraType = "back", open, onToggle, onChange }) => {
+  const isFront = cameraType === "front";
+  const flashWord = isFront ? "Screen glow" : "Torch";
 
-const Flash: React.FC<FlashProps> = ({ value, open, onToggle, onChange }) => {
+  const FLASH_OPTIONS: { value: FlashMode; label: string; desc: string; icon: string }[] = [
+    { value: "off", label: "Off", desc: "No flash", icon: "🚫" },
+    { value: "auto", label: "Auto", desc: `${flashWord} on capture`, icon: "⚡" },
+    { value: "always", label: "On", desc: `${flashWord} always on`, icon: "🔆" },
+  ];
   return (
     <div className="relative">
       <button

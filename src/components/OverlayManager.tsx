@@ -37,7 +37,7 @@ const OverlayManager: React.FC<OverlayManagerProps> = ({ onAddOverlay }) => {
         onClick={openFilePicker}
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-base text-white/90 transition hover:bg-white/15 active:scale-95"
         aria-label="Add overlay image"
-        title="Add pose reference image"
+        title="Choose a pose reference — replaces the current one"
       >
         <span className="relative leading-none">
           🖼<span className="absolute -bottom-1 -right-1.5 text-[11px] font-bold">+</span>

@@ -14,6 +14,7 @@ interface TopProps {
   setTimerValue: (value: number) => void;
   showGrid: boolean;
   setShowGrid: (show: boolean) => void;
+  cameraType: "user" | "environment";
 }
 
 type Panel = null | "flash" | "ratio" | "timer" | "settings";
@@ -27,6 +28,7 @@ const Top: React.FC<TopProps> = ({
   setTimerValue,
   showGrid,
   setShowGrid,
+  cameraType,
 }) => {
   const [openPanel, setOpenPanel] = useState<Panel>(null);
 
@@ -41,6 +43,7 @@ const Top: React.FC<TopProps> = ({
         <div className="flex items-center gap-1.5">
           <Flash
             value={flashMode}
+            cameraType={cameraType === "user" ? "front" : "back"}
             open={openPanel === "flash"}
             onToggle={() => toggle("flash")}
             onChange={(mode) => {

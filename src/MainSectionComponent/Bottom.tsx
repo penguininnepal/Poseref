@@ -4,19 +4,27 @@ import OverlayManager from "../components/OverlayManager";
 import TransformControls from "../components/TransformControls";
 import PreviewThumbnail from "../components/PreviewThumbnail";
 import CaptureButton from "../components/CaptureButton";
+import RecordButton from "../components/RecordButton";
 import SwapCamera from "../components/SwapCamera";
+import type { CameraMode, MediaItem } from "../lib/camera";
 
 interface BottomProps {
   onCapture: () => void;
-  lastPhoto: string | null;
+  lastMedia: MediaItem | null;
   onSwapCamera: (type: "front" | "back") => void;
   onOpenGallery: () => void;
   photoCount: number;
+  canCapture?: boolean;
+  mode: CameraMode;
+  onModeChange: (mode: CameraMode) => void;
+  recording: boolean;
   overlayOpacity: number;
   setOverlayOpacity: (opacity: number) => void;
   showOverlay: boolean;
   setShowOverlay: (show: boolean) => void;
   onAddOverlay: (src: string) => void;
+  overlayCount: number;
+  onRemoveOverlay: () => void;
   onRotateOverlay: () => void;
   onFlipOverlay: () => void;
   onScaleOverlay: () => void;
@@ -26,15 +34,21 @@ interface BottomProps {
 
 const Bottom: React.FC<BottomProps> = ({
   onCapture,
-  lastPhoto,
+  lastMedia,
   onSwapCamera,
   onOpenGallery,
   photoCount,
+  canCapture = true,
+  mode,
+  onModeChange,
+  recording,
   overlayOpacity,
   setOverlayOpacity,
   showOverlay,
   setShowOverlay,
   onAddOverlay,
+  overlayCount,
+  onRemoveOverlay,
   onRotateOverlay,
   onFlipOverlay,
   onScaleOverlay,
@@ -54,6 +68,11 @@ const Bottom: React.FC<BottomProps> = ({
         >
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
             Pose reference
+            {overlayCount > 0 && (
+              <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-[10px] tabular-nums text-white/80">
+                {overlayCount}
+              </span>
+            )}
           </span>
           <span className="text-xs text-white/55">{poseToolsOpen ? "▾" : "▸"}</span>
         </button>
@@ -77,6 +96,23 @@ const Bottom: React.FC<BottomProps> = ({
                 <OpacityControl value={overlayOpacity} onChange={setOverlayOpacity} />
               </div>
               <OverlayManager onAddOverlay={onAddOverlay} />
+              <button
+                onClick={onRemoveOverlay}
+                disabled={overlayCount === 0}
+                aria-label="Remove pose reference overlay"
+                title={
+                  overlayCount === 0
+                    ? "No overlay to remove"
+                    : "Remove the current overlay"
+                }
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-base transition active:scale-95 ${
+                  overlayCount === 0
+                    ? "border-white/5 bg-white/[0.03] text-white/25"
+                    : "border-red-400/25 bg-red-500/10 text-red-300 hover:bg-red-500/20"
+                }`}
+              >
+                🗑
+              </button>
             </div>
 
             <div className="flex items-center justify-between gap-2">
@@ -106,6 +142,35 @@ const Bottom: React.FC<BottomProps> = ({
         )}
       </div>
 
+      {/* Native-style PHOTO / VIDEO mode selector */}
+      <div className="flex justify-center pb-1">
+        <div
+          role="tablist"
+          aria-label="Camera mode"
+          className="flex items-center gap-1 rounded-full bg-white/5 p-1"
+        >
+          {(["photo", "video"] as CameraMode[]).map((option) => {
+            const active = mode === option;
+            return (
+              <button
+                key={option}
+                role="tab"
+                aria-selected={active}
+                disabled={recording}
+                onClick={() => onModeChange(option)}
+                className={`rounded-full px-4 py-1 text-[11px] font-bold uppercase tracking-[0.18em] transition ${
+                  active
+                    ? "bg-white/15 text-yellow-400"
+                    : "text-white/50 hover:text-white/80"
+                } ${recording ? "opacity-40" : ""}`}
+              >
+                {option === "photo" ? "Photo" : "Video"}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Standard shutter row: thumbnail | shutter | flip */}
       <div className="flex items-center justify-between gap-2 px-1 pt-1">
         <button
@@ -113,10 +178,14 @@ const Bottom: React.FC<BottomProps> = ({
           aria-label="Open gallery"
           className="rounded-xl transition hover:bg-white/10 active:scale-95"
         >
-          <PreviewThumbnail photo={lastPhoto} count={photoCount} />
+          <PreviewThumbnail media={lastMedia} count={photoCount} />
         </button>
-        <CaptureButton onClick={onCapture} />
-        <SwapCamera onSwap={onSwapCamera} />
+        {mode === "photo" ? (
+          <CaptureButton onClick={onCapture} disabled={!canCapture} />
+        ) : (
+          <RecordButton recording={recording} disabled={!canCapture} onToggle={onCapture} />
+        )}
+        <SwapCamera onSwap={onSwapCamera} disabled={recording} />
       </div>
     </div>
   );

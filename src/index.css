@@ -110,3 +110,15 @@ input {
 .animate-menuPop {
   animation: menuPop 0.15s ease-out;
 }
+
+/* Tap-to-focus ring: pops in, holds, fades out */
+@keyframes focusRing {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+  15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+.animate-focusRing {
+  animation: focusRing 1.3s ease-out forwards;
+}

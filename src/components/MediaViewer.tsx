@@ -1,7 +1,8 @@
 import { useState } from "react";
+import type { MediaItem } from "../lib/camera";
 
-interface ImageViewerProps {
-  src: string;
+interface MediaViewerProps {
+  item: MediaItem;
   index: number;
   totalPhotos: number;
   isLiked: boolean;
@@ -11,8 +12,8 @@ interface ImageViewerProps {
   onDownload: () => void;
 }
 
-const ImageViewer: React.FC<ImageViewerProps> = ({
-  src,
+const MediaViewer: React.FC<MediaViewerProps> = ({
+  item,
   index,
   totalPhotos,
   isLiked,
@@ -24,7 +25,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   const getFormattedDate = () => {
-    const today = new Date();
+    const source = item.createdAt > 0 ? new Date(item.createdAt) : new Date();
     const months = [
       "January",
       "February",
@@ -39,11 +40,11 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       "November",
       "December",
     ];
-    const month = months[today.getMonth()];
-    const day = today.getDate();
-    const year = today.getFullYear();
-    const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
+    const month = months[source.getMonth()];
+    const day = source.getDate();
+    const year = source.getFullYear();
+    const hours = String(source.getHours()).padStart(2, "0");
+    const minutes = String(source.getMinutes()).padStart(2, "0");
 
     return {
       date: `${month} ${day}, ${year}`,
@@ -72,13 +73,24 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         <div className="w-6" />
       </div>
 
-      {/* Image Container */}
+      {/* Media Container */}
       <div className="flex-1 flex items-center justify-center overflow-hidden px-3 py-3 bg-black">
-        <img
-          src={src}
-          alt="Selected"
-          className="max-h-full max-w-full object-contain"
-        />
+        {item.kind === "video" ? (
+          <video
+            src={item.src}
+            poster={item.poster}
+            controls
+            autoPlay
+            playsInline
+            className="max-h-full max-w-full object-contain"
+          />
+        ) : (
+          <img
+            src={item.src}
+            alt="Selected"
+            className="max-h-full max-w-full object-contain"
+          />
+        )}
       </div>
 
       {/* Bottom Action Bar */}
@@ -124,8 +136,15 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
           ⋯
         </button>
       </div>
+
+      {showMoreMenu && (
+        <div className="border-t border-white/10 px-4 py-3 text-center text-xs text-white/50">
+          {item.kind === "video" ? "Video" : "Photo"} {index + 1} of {totalPhotos}
+          {item.kind === "video" ? " • recorded in Poseref" : " • captured in Poseref"}
+        </div>
+      )}
     </div>
   );
 };
 
-export default ImageViewer;
+export default MediaViewer;

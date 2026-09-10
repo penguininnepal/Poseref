@@ -1,49 +1,55 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import ImageViewer from "./components/ImageViewer";
+import MediaViewer from "./components/MediaViewer";
+import { formatDuration, type MediaItem } from "./lib/camera";
 
 interface GalleryPageProps {
-  photos: string[];
+  media: MediaItem[];
   onDelete: (index: number) => void;
 }
 
-interface SelectedPhoto {
+interface SelectedMedia {
   index: number;
-  src: string;
+  item: MediaItem;
 }
 
-const GalleryPage = ({ photos, onDelete }: GalleryPageProps) => {
-  const [selectedPhoto, setSelectedPhoto] = useState<SelectedPhoto | null>(null);
-  const [likedPhotos, setLikedPhotos] = useState<number[]>([]);
+const GalleryPage = ({ media, onDelete }: GalleryPageProps) => {
+  const [selected, setSelected] = useState<SelectedMedia | null>(null);
+  const [likedIds, setLikedIds] = useState<string[]>([]);
 
-  const toggleLike = (index: number) => {
-    setLikedPhotos((current) =>
-      current.includes(index) ? current.filter((item) => item !== index) : [...current, index]
+  const toggleLike = (id: string) => {
+    setLikedIds((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
     );
   };
 
   const handleDelete = (index: number) => {
     onDelete(index);
-    setSelectedPhoto(null);
-    setLikedPhotos((current) => current.filter((item) => item !== index));
+    setSelected(null);
+    setLikedIds((current) => current.filter((id) => id !== media[index]?.id));
   };
 
-  const downloadPhoto = async (src: string, index: number) => {
+  const downloadMedia = async (item: MediaItem, index: number) => {
+    const isVideo = item.kind === "video";
     try {
-      const response = await fetch(src);
+      const response = await fetch(item.src);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
+      let ext = isVideo ? ".mp4" : ".png";
+      if (blob.type.includes("webm")) ext = ".webm";
+      else if (blob.type.includes("mp4")) ext = ".mp4";
+      else if (blob.type.includes("jpeg") || blob.type.includes("jpg")) ext = ".jpg";
       link.href = url;
-      link.download = `capture-${index + 1}${blob.type.includes("jpeg") ? ".jpg" : ".png"}`;
+      link.download = `${isVideo ? "video" : "capture"}-${index + 1}${ext}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch {
       const fallbackLink = document.createElement("a");
-      fallbackLink.href = src;
-      fallbackLink.download = `capture-${index + 1}.png`;
+      fallbackLink.href = item.src;
+      fallbackLink.download = `${isVideo ? "video" : "capture"}-${index + 1}${isVideo ? ".mp4" : ".png"}`;
       document.body.appendChild(fallbackLink);
       fallbackLink.click();
       document.body.removeChild(fallbackLink);
@@ -70,7 +76,7 @@ const GalleryPage = ({ photos, onDelete }: GalleryPageProps) => {
 
         {/* Gallery Grid */}
         <div className="flex-1 overflow-y-auto px-2 py-3 scrollbar-hide">
-          {photos.length === 0 ? (
+          {media.length === 0 ? (
             <div className="flex h-full items-center justify-center">
               <div className="text-center">
                 <div className="text-5xl mb-3">📸</div>
@@ -79,19 +85,49 @@ const GalleryPage = ({ photos, onDelete }: GalleryPageProps) => {
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
-            {photos.map((photo, index) => {
-              const isLiked = likedPhotos.includes(index);
+            {media.map((item, index) => {
+              const isLiked = likedIds.includes(item.id);
               return (
                 <button
-                  key={`${photo}-${index}`}
-                  onClick={() => setSelectedPhoto({ index, src: photo })}
+                  key={item.id}
+                  onClick={() => setSelected({ index, item })}
                   className="group relative overflow-hidden rounded-md bg-white/5 aspect-square hover:opacity-80 transition"
                 >
-                  <img
-                    src={photo}
-                    alt={`Capture ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
+                  {item.kind === "video" ? (
+                    <>
+                      {item.poster ? (
+                        <img
+                          src={item.poster}
+                          alt={`Recording ${index + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <video
+                          src={item.src}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="h-full w-full object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-sm text-white">
+                          ▶
+                        </span>
+                      </div>
+                      {typeof item.duration === "number" && (
+                        <div className="absolute bottom-1 right-1 rounded bg-black/70 px-1 py-0.5 text-[10px] font-semibold tabular-nums text-white">
+                          {formatDuration(item.duration)}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={`Capture ${index + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
                   {isLiked && (
                     <div className="absolute top-1 right-1 text-lg text-rose-500">
                       ♥
@@ -116,16 +152,16 @@ const GalleryPage = ({ photos, onDelete }: GalleryPageProps) => {
       </div>
 
       {/* Preview Modal */}
-      {selectedPhoto ? (
-        <ImageViewer
-          src={selectedPhoto.src}
-          index={selectedPhoto.index}
-          totalPhotos={photos.length}
-          isLiked={likedPhotos.includes(selectedPhoto.index)}
-          onLike={() => toggleLike(selectedPhoto.index)}
-          onDelete={() => handleDelete(selectedPhoto.index)}
-          onClose={() => setSelectedPhoto(null)}
-          onDownload={() => downloadPhoto(selectedPhoto.src, selectedPhoto.index)}
+      {selected ? (
+        <MediaViewer
+          item={selected.item}
+          index={selected.index}
+          totalPhotos={media.length}
+          isLiked={likedIds.includes(selected.item.id)}
+          onLike={() => toggleLike(selected.item.id)}
+          onDelete={() => handleDelete(selected.index)}
+          onClose={() => setSelected(null)}
+          onDownload={() => downloadMedia(selected.item, selected.index)}
         />
       ) : null}
     </div>
