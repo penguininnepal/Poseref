@@ -21,6 +21,7 @@ interface ViewScreenProps {
   overlays?: Overlay[];
   overlayOpacity?: number;
   onUpdateOverlay?: (id: string, updates: Partial<Overlay>) => void;
+  showGrid?: boolean;
 }
 
 const ViewScreen: React.FC<ViewScreenProps> = ({
@@ -32,6 +33,7 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
   overlays = [],
   overlayOpacity = 100,
   onUpdateOverlay,
+  showGrid = false,
 }) => {
   const [zoom, setZoom] = useState(1);
   const [showFrontGlow, setShowFrontGlow] = useState(false);
@@ -161,7 +163,7 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
   };
 
   return (
-    <div ref={screenRef} className="relative flex-1 overflow-hidden bg-black touch-none">
+    <div ref={screenRef} className="relative z-10 flex-1 overflow-hidden bg-black touch-none">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_55%)]" />
       <video
         ref={videoRef}
@@ -200,6 +202,16 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
         </div>
       </div>
 
+      {/* Composition grid (rule of thirds) */}
+      {showGrid && (
+        <div className="pointer-events-none absolute inset-0 z-30">
+          <div className="absolute inset-y-0 left-1/3 w-px bg-white/40" />
+          <div className="absolute inset-y-0 left-2/3 w-px bg-white/40" />
+          <div className="absolute inset-x-0 top-1/3 h-px bg-white/40" />
+          <div className="absolute inset-x-0 top-2/3 h-px bg-white/40" />
+        </div>
+      )}
+
       {countdown !== null && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40">
           <span className="rounded-3xl bg-white/90 px-6 py-4 text-6xl font-semibold text-black shadow-2xl">
@@ -214,7 +226,7 @@ const ViewScreen: React.FC<ViewScreenProps> = ({
         </div>
       )}
 
-      <div className="absolute bottom-[152px] z-40 flex w-full justify-center px-4">
+      <div className="absolute inset-x-0 bottom-3 z-40 flex justify-center px-4">
         <ZoomControl zoom={zoom} onChange={setZoom} />
       </div>
 

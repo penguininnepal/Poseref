@@ -29,6 +29,7 @@ const MainSectionComponent: React.FC<MainSectionComponentProps> = ({ photos, add
   const [overlayOpacity, setOverlayOpacity] = useState(100);
   const [showOverlay, setShowOverlay] = useState(true);
   const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null);
+  const [showGrid, setShowGrid] = useState(false);
 
   const lastPhoto = photos[0] ?? null;
 
@@ -107,6 +108,8 @@ const MainSectionComponent: React.FC<MainSectionComponentProps> = ({ photos, add
         setRatio={setRatio}
         timerValue={timerValue}
         setTimerValue={setTimerValue}
+        showGrid={showGrid}
+        setShowGrid={setShowGrid}
       />
       <ViewScreen
         flashMode={flashMode}
@@ -117,6 +120,7 @@ const MainSectionComponent: React.FC<MainSectionComponentProps> = ({ photos, add
         overlays={showOverlay ? overlays : []}
         overlayOpacity={overlayOpacity}
         onUpdateOverlay={updateOverlay}
+        showGrid={showGrid}
       />
       <Bottom
         onCapture={() => document.getElementById("hiddenCaptureTrigger")?.click()}
@@ -124,6 +128,7 @@ const MainSectionComponent: React.FC<MainSectionComponentProps> = ({ photos, add
         onSwapCamera={(t) => setCameraType(t === "front" ? "user" : "environment")}
         onOpenGallery={onOpenGallery}
         photoCount={photos.length}
+        overlayOpacity={overlayOpacity}
         setOverlayOpacity={setOverlayOpacity}
         showOverlay={showOverlay}
         setShowOverlay={setShowOverlay}

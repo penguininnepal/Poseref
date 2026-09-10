@@ -53,28 +53,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
   const { date, time } = getFormattedDate();
 
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(src);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `photo-${index + 1}${blob.type.includes("jpeg") ? ".jpg" : ".png"}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch {
-      const fallbackLink = document.createElement("a");
-      fallbackLink.href = src;
-      fallbackLink.download = `photo-${index + 1}.png`;
-      document.body.appendChild(fallbackLink);
-      fallbackLink.click();
-      document.body.removeChild(fallbackLink);
-    }
-  };
-
   return (
     <div className="absolute inset-0 z-50 flex flex-col bg-black">
       {/* Header */}
@@ -87,7 +65,9 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         </button>
         <div className="text-center">
           <p className="text-white font-semibold">{date}</p>
-          <p className="text-white/60 text-xs">{time}</p>
+          <p className="text-white/60 text-xs">
+            {time} • {index + 1} / {totalPhotos}
+          </p>
         </div>
         <div className="w-6" />
       </div>
@@ -104,7 +84,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
       {/* Bottom Action Bar */}
       <div className="border-t border-white/10 px-4 py-5 flex items-center justify-center gap-12 bg-black/50 backdrop-blur-sm">
         <button
-          onClick={handleDownload}
+          onClick={onDownload}
           className="text-white/70 hover:text-white transition text-3xl"
           aria-label="Download"
         >

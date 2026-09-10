@@ -1,12 +1,35 @@
-const CaptureButton = ({ onClick }: { onClick: () => void }) => {
+import { useState } from "react";
+
+const CaptureButton = ({
+  onClick,
+  disabled = false,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+}) => {
+  const [pressing, setPressing] = useState(false);
+
+  const handlePress = () => {
+    if (disabled) return;
+    setPressing(true);
+    onClick();
+    window.setTimeout(() => setPressing(false), 200);
+  };
+
   return (
     <button
-      onClick={onClick}
-      className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-gradient-to-b from-white via-white to-neutral-300 shadow-[0_15px_40px_rgba(255,255,255,0.2)] transition active:scale-95"
+      onClick={handlePress}
+      disabled={disabled}
+      aria-label="Take photo"
+      className={`group relative flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-full border-[3px] bg-transparent transition active:scale-95 ${
+        disabled ? "border-white/25 opacity-50" : "border-white"
+      } ${pressing ? "animate-shutterPress" : ""}`}
     >
-      <div className="absolute inset-[6px] rounded-full border border-white/40" />
-      <div className="h-12 w-12 rounded-full bg-neutral-900 shadow-inner transition group-active:scale-95" />
-      <div className="absolute inset-0 rounded-full border-[5px] border-neutral-900/70" />
+      <span
+        className={`block h-[60px] w-[60px] rounded-full transition-all duration-150 ${
+          disabled ? "bg-white/40" : "bg-white group-active:scale-90"
+        } ${pressing ? "scale-90" : ""}`}
+      />
     </button>
   );
 };

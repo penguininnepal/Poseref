@@ -1,25 +1,27 @@
-import { useState } from "react";
-
-const OpacityControl = ({ onChange }: { onChange: (value: number) => void }) => {
-  const [opacity, setOpacity] = useState(100);
-
+const OpacityControl = ({
+  onChange,
+  value = 100,
+}: {
+  onChange: (value: number) => void;
+  value?: number;
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    setOpacity(value);
-    console.log("Opacity change triggered:", value);
-    onChange(value);
+    const next = parseInt(e.target.value, 10);
+    console.log("Opacity change triggered:", next);
+    onChange(next);
   };
 
   return (
-    <div className="flex w-full items-center gap-3">
-      <span className="text-sm text-white/70">●</span>
+    <div className="flex w-full items-center gap-2.5">
+      <span className="text-[11px] font-semibold tabular-nums text-white/60">{value}%</span>
       <input
         type="range"
         min="0"
         max="100"
-        value={opacity}
+        value={value}
         onChange={handleChange}
-        className="w-full accent-white"
+        className="camera-range w-full"
+        aria-label="Overlay opacity"
       />
     </div>
   );

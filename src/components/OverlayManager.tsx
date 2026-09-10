@@ -35,11 +35,12 @@ const OverlayManager: React.FC<OverlayManagerProps> = ({ onAddOverlay }) => {
       />
       <button
         onClick={openFilePicker}
-        className="relative rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-2xl text-white/90 transition hover:bg-white/15"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-base text-white/90 transition hover:bg-white/15 active:scale-95"
         aria-label="Add overlay image"
+        title="Add pose reference image"
       >
-        <span className="relative">
-          📷<span className="absolute -bottom-1 -right-1 text-base">+</span>
+        <span className="relative leading-none">
+          🖼<span className="absolute -bottom-1 -right-1.5 text-[11px] font-bold">+</span>
         </span>
       </button>
     </>

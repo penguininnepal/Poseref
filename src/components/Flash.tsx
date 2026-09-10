@@ -1,41 +1,61 @@
-import { useState } from "react";
-
 export type FlashMode = "off" | "auto" | "always";
 
 interface FlashProps {
-  cameraType?: "back" | "front";
-  onModeChange?: (mode: FlashMode) => void;
+  value: FlashMode;
+  open: boolean;
+  onToggle: () => void;
+  onChange: (mode: FlashMode) => void;
 }
 
-const Flash: React.FC<FlashProps> = ({ cameraType = "back", onModeChange }) => {
-  const [mode, setMode] = useState<FlashMode>("off");
-  const [showSelector, setShowSelector] = useState(false);
+const FLASH_OPTIONS: { value: FlashMode; label: string; desc: string; icon: string }[] = [
+  { value: "off", label: "Off", desc: "No flash", icon: "🚫" },
+  { value: "auto", label: "Auto", desc: "Front glow on capture", icon: "⚡" },
+  { value: "always", label: "On", desc: "Front glow always", icon: "🔆" },
+];
 
-  const selectMode = (newMode: FlashMode): void => {
-    setMode(newMode);
-    setShowSelector(false);
-    console.log(`Flash mode selected: ${newMode} (camera: ${cameraType})`);
-    onModeChange?.(newMode);
-  };
-
+const Flash: React.FC<FlashProps> = ({ value, open, onToggle, onChange }) => {
   return (
-    <div className="relative text-white">
-      <div
-        onClick={() => {
-          setShowSelector(true);
-        }}
-        className="flex cursor-pointer flex-col items-center rounded-full border border-white/10 bg-white/10 px-2.5 py-1.5 transition hover:bg-white/15"
+    <div className="relative">
+      <button
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-label="Flash settings"
+        className={`relative flex h-10 w-10 items-center justify-center rounded-full border text-base transition ${
+          open || value !== "off"
+            ? "border-white/40 bg-white/20 text-white"
+            : "border-white/10 bg-white/10 text-white/80 hover:bg-white/15"
+        }`}
       >
-        <span className="text-sm">⚡</span>
-        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/80">{mode}</span>
-      </div>
+        {value === "off" ? "⚡" : value === "auto" ? "⚡" : "🔆"}
+        {value !== "off" && (
+          <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-yellow-400 ring-2 ring-black" />
+        )}
+      </button>
 
-      {showSelector && (
-        <div className="absolute left-0 top-12 z-50 flex min-w-[180px] flex-col gap-2 rounded-2xl border border-white/10 bg-neutral-900/95 p-3 shadow-2xl">
-          <h3 className="text-sm font-semibold text-white">Select flash</h3>
-          <button onClick={() => selectMode("off")} className="rounded-xl bg-white/10 px-3 py-2 text-left text-sm text-white transition hover:bg-white/15">Off</button>
-          <button onClick={() => selectMode("auto")} className="rounded-xl bg-white/10 px-3 py-2 text-left text-sm text-white transition hover:bg-white/15">Auto on capture</button>
-          <button onClick={() => selectMode("always")} className="rounded-xl bg-white/10 px-3 py-2 text-left text-sm text-white transition hover:bg-white/15">Always on</button>
+      {open && (
+        <div className="animate-menuPop absolute left-0 top-12 z-50 w-[200px] rounded-2xl border border-white/10 bg-neutral-900/95 p-2 shadow-2xl backdrop-blur-xl">
+          <p className="px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
+            Flash
+          </p>
+          {FLASH_OPTIONS.map((opt) => {
+            const active = value === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => onChange(opt.value)}
+                className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition ${
+                  active ? "bg-white/15" : "hover:bg-white/10"
+                }`}
+              >
+                <span className="text-base">{opt.icon}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[13px] font-semibold text-white">{opt.label}</span>
+                  <span className="block truncate text-[11px] text-white/55">{opt.desc}</span>
+                </span>
+                {active && <span className="text-sm text-yellow-400">✓</span>}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
